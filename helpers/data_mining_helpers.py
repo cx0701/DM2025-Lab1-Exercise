@@ -1,5 +1,5 @@
 import nltk
-
+import pandas as pd
 """
 Helper functions for data mining lab session 2018 Fall Semester
 Author: Elvis Saravia
@@ -36,3 +36,29 @@ def tokenize_text(text, remove_stopwords=False):
             # filters here
             tokens.append(word)
     return tokens
+
+def check_negative_values(df):
+    """
+    回傳每個欄位負值的數量（Series 一欄）
+    """
+    negative_counts = {}
+    
+    for col in df.columns:
+        if df[col].dtype in ['float64', 'int64']:
+            negative_counts[col] = (df[col] < 0).sum()
+    
+    return pd.Series(negative_counts, name='Negative Count')
+
+def drop_negative_rows(df, cols, inplace=False):
+    """
+    刪除指定欄位含負值的列
+    回傳：
+    DataFrame（如果 inplace=True，則回傳 None）
+    """
+    # 找出含負值的列索引
+    negative_index = df[~(df[cols] >= 0).all(axis=1)].index
+    
+    if inplace:
+        df.drop(index=negative_index, inplace=True)
+    else:
+        return df.drop(index=negative_index)
