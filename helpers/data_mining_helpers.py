@@ -25,7 +25,17 @@ def check_missing_values(row):
         if element == True:
             counter+=1
     return ("The amoung of missing records is: ", counter)
-
+def check_unk_values(df):
+    """
+    回傳每個類別型欄位中 'UNK' 的數量（Series 一欄）
+    """
+    unk_counts = {}
+    
+    for col in df.columns:
+        if df[col].dtype == 'object' or str(df[col].dtype) == 'category':
+            unk_counts[col] = (df[col] == 'UNK').sum()
+    
+    return pd.Series(unk_counts, name='UNK Count')
 def tokenize_text(text, remove_stopwords=False):
     """
     Tokenize text using the nltk library
